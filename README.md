@@ -66,12 +66,12 @@ z:        6.0719    2.4034    5.1764    0.9165   15.3141
 p:        0.0000    0.0162    0.0000    0.3594         0
 
 ------------------------------------------------------------
-Fleiss'es (overall) kappa = 0.2099
-kappa error = 0.0170
-kappa C.I. (95%) = 0.1767 	 0.2432
-Fair agreement
-z = 12.3743 	 p = 0.0000
-Reject null hypotesis: observed agreement is not accidental
+Fleiss'es (overall) kappa = 0.2099<br/>
+kappa error = 0.0170<br/>
+kappa C.I. (95%) = 0.1767 	 0.2432<br/>
+Fair agreement<br/>
+z = 12.3743 	 p = 0.0000<br/>
+Reject null hypotesis: observed agreement is not accidental<br/>
 
           Created by Giuseppe Cardillo
           giuseppe.cardillo-edta@poste.it
