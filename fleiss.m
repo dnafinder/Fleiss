@@ -112,29 +112,28 @@ z=k/sek; %normalized kappa
 p=(1-0.5*erfc(-abs(z)/realsqrt(2)))*2;
 
 %display results
-fprintf('kj:   '); disp(kj)
-fprintf('s.e.: '); disp(sekj)
-fprintf('z:    '); disp(zkj)
-fprintf('p:    '); disp(pkj)
-disp(repmat('-',1,60))
-fprintf('Fleiss''es (overall) kappa = %0.4f\n',k)
-fprintf('kappa error = %0.4f\n',sek)
-fprintf('kappa C.I. (%d%%) = %0.4f \t %0.4f\n',(1-alpha)*100,ci)
-if k<0
-    disp('Poor agreement')
-elseif k>=0 && k<=0.2
-    disp('Slight agreement')
-elseif k>0.2 && k<=0.4
-    disp('Fair agreement')
-elseif k>0.4 && k<=0.6
-    disp('Moderate agreement')
-elseif k>0.6 && k<=0.8
-    disp('Substantial agreement')
-elseif k>0.8 && k<=1
-    disp('Perfect agreement')
+T=table;
+for I=1:size(x,2)
+    eval(sprintf('T.Col%i = [kj(%i);sekj;zkj(%i);pkj(%i)];',I,I,I,I))
 end
-fprintf('z = %0.4f \t p = %0.4f\n',z,p)
-if p<0.05
+T.Properties.RowNames={'kj' 'sekj' 'zkj' 'pj'};
+disp(T)
+if k<0
+    txt={'Poor'};
+elseif k>=0 && k<=0.2
+    txt={'Slight'};
+elseif k>0.2 && k<=0.4
+    txt={'Fair'};
+elseif k>0.4 && k<=0.6
+    txt={'Moderate'};
+elseif k>0.6 && k<=0.8
+    txt={'Substantial'};
+elseif k>0.8 && k<=1
+    txt={'Perfect'};
+end
+T=table(k,sek,ci,txt,z,p,'VariableNames',{'Fleiss_k', 'error', 'Confidence_Interval', 'Agreement','z','p_value'});
+disp(T)
+if p<alpha
     disp('Reject null hypotesis: observed agreement is not accidental')
 else
     disp('Accept null hypotesis: observed agreement is accidental')
