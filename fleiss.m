@@ -83,7 +83,7 @@ function fleiss(x,varargin)
 %Input Error handling
 p = inputParser;
 addRequired(p,'x',@(x) validateattributes(x,{'numeric'},{'nonempty','integer','real','finite','nonnan','nonnegative'}));
-addOptional(p,'alpha',0.05, @(x) isnumeric(x) && isreal(x) && isfinite(x) && isscalar(x) && (x>0 || x<1));
+addOptional(p,'alpha',0.05, @(x) validateattributes(x,{'numeric'},{'scalar','real','finite','nonnan','>',0,'<',1}));
 parse(p,x,varargin{:});
 x=p.Results.x; alpha=p.Results.alpha;
 clear p default* validation*
