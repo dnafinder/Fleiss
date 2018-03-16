@@ -86,7 +86,7 @@ addRequired(p,'x',@(x) validateattributes(x,{'numeric'},{'nonempty','integer','r
 addOptional(p,'alpha',0.05, @(x) validateattributes(x,{'numeric'},{'scalar','real','finite','nonnan','>',0,'<',1}));
 parse(p,x,varargin{:});
 x=p.Results.x; alpha=p.Results.alpha;
-clear p default* validation*
+clear p 
 n=size(x,1); %subjects
 
 %chech if the raters are the same for each rows
