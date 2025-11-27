@@ -1,81 +1,227 @@
-# Fleiss
-Compute the Fleiss'es kappa<br/>
-Fleiss'es kappa is a generalisation of Scott's pi statistic, a
-statistical measure of inter-rater reliability. It is also related to
-Cohen's kappa statistic. Whereas Scott's pi and Cohen's kappa work for
-only two raters, Fleiss'es kappa works for any number of raters giving
-categorical ratings (see nominal data), to a fixed number of items. It
-can be interpreted as expressing the extent to which the observed amount
-of agreement among raters exceeds what would be expected if all raters
-made their ratings completely randomly. Agreement can be thought of as
-follows, if a fixed number of people assign numerical ratings to a number
-of items then the kappa will give a measure for how consistent the
-ratings are. The scoring range is between 0 and 1. 
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=dnafinder/Fleiss&file=fleiss.m)
 
-Syntax: 	fleiss(X,alpha)
-     
-    Inputs:
-          X - square data matrix
-          ALPHA - significance level (default = 0.05)
-    Outputs:
-          - kappa value for the j-th category (kj)
-          - kj standard error
-          - z of kj
-          - p-value
-          - Fleiss'es kappa
-          - kappa standard error
-          - kappa confidence interval
-          - k benchmarks by Landis and Koch 
-          - z test
+# Fleiss – Fleiss' kappa for multiple raters in MATLAB (fleiss.m)
 
-     Example: 
-An example of the use of Fleiss'es kappa may be the following: Consider
-fourteen psychiatrists are asked to look at ten patients. Each
-psychiatrist gives one of possibly five diagnoses to each patient. The
-Fleiss' kappa can be computed from this matrix to show
-the degree of agreement between the psychiatrists above the level of
-agreement expected by chance.<br/>
-x =
-    0     0     0     0    14<br/>
-    0     2     6     4     2<br/>
-    0     0     3     5     6<br/>
-    0     3     9     2     0<br/>
-    2     2     8     1     1<br/>
-    7     7     0     0     0<br/>
-    3     2     6     3     0<br/>
-    2     5     3     2     2<br/>
-    6     5     2     1     0<br/>
-    0     2     2     3     7<br/>
+## 📌 Overview
 
-So there are 10 rows (1 for each patient) and 5 columns (1 for each
-diagnosis). Each cell represents the number of raters who
-assigned the i-th subject to the j-th category<br/>
-x=[0 0 0 0 14; 0 2 6 4 2; 0 0 3 5 6; 0 3 9 2 0; 2 2 8 1 1 ; 7 7 0 0 0;...
-3 2 6 3 0; 2 5 3 2 2; 6 5 2 1 0; 0 2 2 3 7];
+This repository provides a MATLAB implementation of **Fleiss' kappa**, a measure of inter-rater agreement for **any number of raters** assigning categorical ratings to a fixed set of items.
 
- Calling on Matlab the function: fleiss(x);
+Fleiss' kappa generalizes Scott's pi and is closely related to Cohen's kappa, but unlike Cohen's coefficient (which is defined for two raters), Fleiss' kappa can handle **multiple raters**. It quantifies how much the observed agreement exceeds what would be expected by chance, given the overall distribution of ratings across categories.
 
-          Answer is:
+The core function is:
 
-kj:       0.2013    0.0797    0.1716    0.0304    0.5077
+- fleiss.m
 
-s.e.:     0.0331
+It computes Fleiss' overall kappa, its standard error, confidence interval, and category-wise kappa values, together with inferential statistics.
 
-z:        6.0719    2.4034    5.1764    0.9165   15.3141
+---
 
-p:        0.0000    0.0162    0.0000    0.3594         0
+## ✨ Features
 
-------------------------------------------------------------
-Fleiss'es (overall) kappa = 0.2099<br/>
-kappa error = 0.0170<br/>
-kappa C.I. (95%) = 0.1767 	 0.2432<br/>
-Fair agreement<br/>
-z = 12.3743 	 p = 0.0000<br/>
-Reject null hypotesis: observed agreement is not accidental<br/>
+- Supports **multiple raters** (any number ≥ 2)
+- Works with **nominal categorical data**
+- Accepts a general **N-by-K contingency matrix**, where:
+  - N = number of subjects/items
+  - K = number of categories
+- Returns:
+  - Fleiss' overall kappa
+  - Confidence interval for kappa
+  - Standard error of kappa
+  - Category-wise kappa values (kj)
+  - z and p-values for each category
+- Provides **Landis & Koch** qualitative classification of agreement
+- Optional **textual report** in the Command Window
+- Robust input validation (nonnegative integer counts, constant raters per subject)
+- Updated metadata with GitHub integration
 
-          Created by Giuseppe Cardillo
-          giuseppe.cardillo-edta@poste.it
+---
 
-To cite this file, this would be an appropriate format:
-Cardillo G. (2007) Fleiss'es kappa: compute the Fleiss'es kappa for multiple raters.   
-http://www.mathworks.com/matlabcentral/fileexchange/15426
+## 📥 Function syntax
+
+Basic usage:
+
+- fleiss(X)
+- fleiss(X, ALPHA)
+- fleiss(X, ALPHA, DISPLAY)
+- [K, CI] = fleiss(...)
+- [K, CI, STATS] = fleiss(...)
+
+Where:
+
+- X  
+  N-by-K numeric matrix of nonnegative integer counts.  
+  Each row i corresponds to a subject/item, each column j to a category.  
+  Entry X(i,j) = number of raters who assigned subject i to category j.
+
+  All rows must sum to the same number m, the number of raters per subject.
+
+- ALPHA  
+  Significance level for the confidence interval of kappa (default 0.05).
+
+- DISPLAY  
+  Logical flag controlling textual output (default true):
+  - true  → prints a complete report in the Command Window
+  - false → silent mode, only numerical outputs
+
+Outputs:
+
+- K  
+  Fleiss' overall kappa.
+
+- CI  
+  1-by-2 vector with lower and upper bounds of the confidence interval for K.
+
+- STATS  
+  Structure with auxiliary results:
+  - kj              – kappa value for each category (1-by-K)
+  - sekj            – standard error of kj (scalar)
+  - zkj             – z statistics for kj (1-by-K)
+  - pkj             – p-values for kj (1-by-K)
+  - pj              – overall proportion of ratings in each category
+  - kappa           – Fleiss' kappa (same as K)
+  - se              – standard error of kappa
+  - ci              – confidence interval for kappa (same as CI)
+  - alpha           – significance level
+  - z               – z statistic for overall kappa
+  - p               – p-value for overall kappa
+  - nSubjects       – number of subjects/items (N)
+  - nCategories     – number of categories (K)
+  - nRaters         – number of raters per subject (m)
+  - landisKochClass – qualitative agreement class
+
+---
+
+## 📊 Example
+
+Consider the classic example from Fleiss' kappa literature: fourteen psychiatrists diagnose ten patients, choosing among five possible diagnoses.
+
+X is:
+
+x = [ 0  0  0  0 14;
+      0  2  6  4  2;
+      0  0  3  5  6;
+      0  3  9  2  0;
+      2  2  8  1  1;
+      7  7  0  0  0;
+      3  2  6  3  0;
+      2  5  3  2  2;
+      6  5  2  1  0;
+      0  2  2  3  7 ];
+
+There are:
+
+- 10 subjects (rows)
+- 5 categories (columns)
+- 14 raters (row sum for each subject)
+
+Compute Fleiss' kappa with default settings:
+
+fleiss(x);
+
+This prints:
+
+- Category-wise kappa values (kj)
+- Standard error for kj
+- z and p-values for each category
+- Overall Fleiss' kappa with standard error
+- Confidence interval
+- Landis & Koch qualitative classification
+- z statistic and p-value for the hypothesis test that agreement is purely accidental
+
+To use the results programmatically, without printing:
+
+[k, ci, stats] = fleiss(x, 0.05, false);
+
+You can then inspect, for example:
+
+- stats.kj              – category-specific kappas
+- stats.kappa           – overall kappa
+- stats.landisKochClass – qualitative agreement summary
+
+---
+
+## 🧮 Interpretation
+
+Fleiss' kappa compares:
+
+- Observed agreement: how often raters actually agree
+- Expected agreement: how often they would agree **by chance**, given the marginal distribution of ratings
+
+A kappa of:
+
+- 0 → no agreement beyond chance
+- 1 → perfect agreement
+- Negative values → agreement less than what would be expected by chance
+
+The function also provides a **z-test** for:
+
+- H0: kappa = 0 (agreement is purely accidental)
+- H1: kappa ≠ 0 (agreement is not accidental)
+
+---
+
+## 🧾 Landis & Koch benchmarks
+
+The function classifies the overall kappa according to Landis and Koch (1977):
+
+- k < 0           → Poor agreement
+- 0.00–0.20       → Slight agreement
+- 0.21–0.40       → Fair agreement
+- 0.41–0.60       → Moderate agreement
+- 0.61–0.80       → Substantial agreement
+- 0.81–1.00       → Perfect agreement
+
+This classification is returned in `STATS.landisKochClass` and printed when `DISPLAY` is true.
+
+---
+
+## 📚 References
+
+- Fleiss JL. (1971). Measuring nominal scale agreement among many raters. Psychological Bulletin, 76(5), 378–382.
+- Fleiss JL. (1981). Statistical Methods for Rates and Proportions. 2nd ed. Wiley.
+- Landis JR, Koch GG. (1977). The measurement of observer agreement for categorical data. Biometrics, 33(1), 159–174.
+- Cardillo G. (2007). Fleiss' kappa: compute Fleiss' kappa for multiple raters. Available from:  
+  https://github.com/dnafinder/Fleiss
+
+---
+
+## 📁 Repository structure
+
+Main file:
+
+- fleiss.m – core function implementing Fleiss' kappa and category-wise statistics.
+
+Additional files (if present) may include:
+
+- Example scripts
+- Test scripts
+- Documentation or auxiliary utilities
+
+---
+
+## 🚀 Getting started
+
+1. Clone or download the repository:
+
+   - GitHub: https://github.com/dnafinder/Fleiss
+
+2. Add the folder containing `fleiss.m` to your MATLAB path, for example:
+
+   - Via MATLAB GUI: Home → Set Path → Add Folder
+   - Or programmatically: `addpath('path_to_folder')`
+
+3. Call `fleiss` from the Command Window or from your own scripts:
+
+   - `fleiss(X);`
+   - `[k, ci, stats] = fleiss(X, 0.01, false);`
+
+---
+
+## ⚖️ License and citation
+
+Please see the license file in this repository (if provided) for detailed licensing terms.
+
+If you use this code in research, teaching, or software, an appropriate citation is:
+
+Cardillo G. (2007). Fleiss' kappa: compute Fleiss' kappa for multiple raters. Available from:  
+https://github.com/dnafinder/Fleiss
